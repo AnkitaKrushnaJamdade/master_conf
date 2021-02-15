@@ -14,8 +14,9 @@
         src: "kubernetes.repo"
         dest: /etc/yum.repos.d/
         mode: 0644        
-- name: SELINUX Disable
-  command: "sudo sed -i 's/^SELINUX=enforcing$/SELINUX=permissive/' /etc/selinux/config"
+- name: Disable SELinux
+  selinux:
+    state: disabled
 - name: Kubeadm, kubectl, kubelet installation
   command: "sudo yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetes"  
 - name: Kubelet Starting
@@ -33,7 +34,7 @@
         name: "docker"
         state: restarted
 - name: Pull images
-  command: "kubeadm config images pull"
+  shell: "kubeadm config images pull"
 - name: iproute-tc installation
   package:
         name: "iproute-tc"
@@ -46,9 +47,11 @@
   debug:
         var: init      
 - name: making directory
-  command: "sudo mkdir -p $HOME/.kube" 
+  shell: "sudo mkdir -p $HOME/.kube" 
 - name: copying 
-  command: "sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config" 
+  copy: 
+        src: /etc/kubernetes/admin.conf
+        dest: $HOME/.kube/config" 
 - name: printing token
   command: "kubeadm token create --print-join-command"
   register: x 
@@ -61,4 +64,4 @@
         src: /root/out.txt
         dest: /root/
 - name: installing flannel
-  command: "kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml"
+  shell: "kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml"
