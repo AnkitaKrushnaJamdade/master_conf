@@ -11,8 +11,6 @@ galaxy_info:
      - master
      - kubernetes
 
-dependencies: 
-    - boto library
-    - updated dynamic inventory
-    - master-instance role
+dependencies: boto library master-instance role
+
   
