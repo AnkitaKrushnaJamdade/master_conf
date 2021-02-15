@@ -17,8 +17,9 @@
 - name: Disable SELinux
   selinux:
     state: disabled
+ # Write a script in your controller node at location /root/kubectl.txt. In that script write this command: sudo yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetes
 - name: Kubeadm, kubectl, kubelet installation
-  command: "sudo yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetes"  
+  script: /root/kubectl.txt
 - name: Kubelet Starting
   service:
         name: "kubelet"
@@ -34,13 +35,14 @@
         name: "docker"
         state: restarted
 - name: Pull images
-  shell: "kubeadm config images pull"
+  command: "kubeadm config images pull"
 - name: iproute-tc installation
   package:
         name: "iproute-tc"
-        state: present     
+        state: present  
+# Write another script at location /root/kubeadm.txt and write command: kubeadm init --pod-network-cidr=10.244.0.0/16 --ignore-preflight-errors=NumCPU --ignore-preflight-errors=Mem
 - name: kubeadm init command
-  command: "kubeadm init --pod-network-cidr=10.244.0.0/16 --ignore-preflight-errors=NumCPU --ignore-preflight-errors=Mem"
+  script: /root/kubeadm.txt
   ignore_errors: true
   register: init 
 - name: printing output of kubeadm init command
@@ -63,5 +65,6 @@
   fetch:
         src: /root/out.txt
         dest: /root/
+ # write script at /root/flannel.txt and command as : kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
 - name: installing flannel
-  shell: "kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml"
+  script: /root/flannel.txt
