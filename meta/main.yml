@@ -10,7 +10,3 @@ galaxy_info:
   galaxy_tags: 
      - master
      - kubernetes
-
-dependencies: boto library master-instance role
-
-  
