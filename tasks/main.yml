@@ -1,0 +1,60 @@
+---
+# tasks file for master_conf
+- name: Docker installation
+  package:
+        name: "docker"
+        state: present
+- name: Docker Service Start
+  service:
+        name: "docker"
+        state: started
+        enabled: yes
+- name: Kubernetes Repo
+  copy:
+        src: "kubernetes.repo"
+        dest: /etc/yum.repos.d/
+        mode: 0644
+- name: SELINUX Disable
+  command: "sudo sed -i 's/^SELINUX=enforcing$/SELINUX=permissive/' /etc/selinux/config"
+- name: Kubeadm, kubectl, kubelet installation
+  command: "sudo yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetes"
+- name: Kubelet Starting
+  service:
+        name: "kubelet"
+        state: started
+        enabled: yes
+- name: Changing driver
+  copy:
+        src: daemon.json
+        dest: /etc/docker/
+        mode: 0644
+- name: Restarting Docker Service
+  service:
+        name: "docker"
+        state: restarted
+- name: Pull images
+  command: "kubeadm config images pull"
+- name: iproute-tc installation
+  package:
+        name: "iproute-tc"
+        state: present
+- name: kubeadm init command
+  command: "kubeadm init --pod-network-cidr=10.244.0.0/16 --ignore-preflight-errors=NumCPU --ignore-preflight-errors=Mem"
+  ignore_errors: true
+  register: init
+- debug:
+        var: init
+- command: "sudo mkdir -p $HOME/.kube"
+- command: "sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config"
+  #- command: "sudo chown $(id -u):$(id -g) $HOME/.kube/config"
+
+
+- command: "kubeadm token create --print-join-command"
+  register: x
+- copy:
+        content: "{{ x.stdout }}"
+        dest: /root/out.txt
+- fetch:
+        src: /root/out.txt
+        dest: /root/
+- command: "kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml"
