@@ -7,7 +7,7 @@ This role should be applied after master-instance role. It will run all necessar
 Requirements
 ------------
 
-Pre-requirements for this are your dynamic inventory should be ready and configuration file should be working. Also boto library need to be installed.
+Pre-requirements for this are your dynamic inventory should be ready and configuration file should be working. Also boto library need to be installed. You also need to add some scripts. The commands which need to written in the script and script name is located in /tasks/main.yml file
 
 Role Variables
 --------------
