@@ -15,8 +15,7 @@
         dest: /etc/yum.repos.d/
         mode: 0644        
 - name: Disable SELinux
-  selinux:
-    state: disabled
+  command: "sudo sed -i 's/^SELINUX=enforcing$/SELINUX=permissive/' /etc/selinux/config"
  # Write a script in your controller node at location /root/kubectl.txt. In that script write this command: sudo yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetes
 - name: Kubeadm, kubectl, kubelet installation
   script: /root/kubectl.txt
