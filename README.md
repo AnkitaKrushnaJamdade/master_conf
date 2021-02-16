@@ -17,7 +17,7 @@ There are no role variables
 Dependencies
 ------------
 
-Other roles required are master-instance, slave-instance, slave_conf
+Other roles required are master_instance, slave_instance, slave_conf
 
 Example Playbook
 ----------------
