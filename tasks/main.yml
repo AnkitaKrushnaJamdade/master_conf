@@ -50,9 +50,7 @@
 - name: making directory
   shell: "sudo mkdir -p $HOME/.kube" 
 - name: copying 
-  copy: 
-        src: /etc/kubernetes/admin.conf
-        dest: $HOME/.kube/config" 
+  command: "sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config"
 - name: printing token
   command: "kubeadm token create --print-join-command"
   register: x 
